@@ -1,3 +1,76 @@
-<h1>My personal website. Look at this mad web skills</h1>
+<script type="text/javascript">
+var context;
+var dx= 4;
+var dy=4;
+var y=150;
+var x=10;
+function draw(){
+	context= myCanvas.getContext('2d');
+	context.clearRect(0,0,300,300);
+	context.beginPath();
+	context.fillStyle="#0000ff";
+	context.arc(x,y,20,0,Math.PI*2,true);
+	context.closePath();
+	context.fill();
+	if( x<0 || x>300)
+	dx=-dx;
+	if( y<0 || y>300)
+		dy=-dy;
+		x+=dx;
+		y+=dy;
+	}
+setInterval(draw,10); 
+</script>
 
-<h3>P.S. it will improve in the future...</h3>
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>HTML5 Bouncing Ball</title>
+
+<style type="text/css">
+
+body { 
+    background-color: #ededed; 
+    font: normal 12px/18px Arial, Helvetica, sans-serif; 
+}
+/*
+h1 { 
+    display: block; 
+    width: 600px; 
+    margin: 20px auto; 
+    padding-bottom: 20px; 
+    font: normal 24px/30px Georgia, "Times New Roman", Times, serif; 
+    color: #333; 
+    text-shadow: 1px 2px 3px #ccc; 
+    border-bottom: 1px solid #cbcbcb; 
+}
+*/
+/*
+#container { 
+    width: 600px; 
+    margin: 0 auto; 
+}
+*/
+#myCanvas { 
+    background: #fff; 
+    border: 1px solid #cbcbcb; 
+}
+/*
+#nav { 
+    display: block; 
+    width: 100%; 
+    text-align: center; 
+}
+*/
+</style>
+</head>
+
+<body>
+    <h1>Bouncing a Ball Around with HTML5 and JavaScript</h1>
+    <!-- <div id="container"> -->
+	    <canvas id="myCanvas" width="300" height="300"></canvas>
+    <!-- </div> -->
+</body>
+</html>
