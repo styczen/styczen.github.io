@@ -13,12 +13,12 @@ with speed of the car for corresponding frame in video. First, I investigated pr
 to see what the images look like. All source code is provided on [https://github.com/styczen/speed-challenge](https://github.com/styczen/speed-challenge). Below is sample 
 frame provided in dataset for the challenge.
 
-![](/images/speed-challenge/full_sample_frame.png)
+![](/images/speed-challenge/full_sample_frame.png){: .align-center}
 
 Additionaly I read random frames from the whole video stream and visualize them with
 corresponding speed:
 
-![](/images/speed-challenge/random_batch.png)
+![](/images/speed-challenge/random_batch.png){: .align-center}
 
 ## Preprocessing
 
@@ -32,7 +32,7 @@ distorted and it could only make it harder to automatically extract features.
 So I decided to crop each image. Below is the scene from the image above but cropped
 on all sides.
 
-![](/images/speed-challenge/cropped_sample_frame.png)
+![](/images/speed-challenge/cropped_sample_frame.png){: .align-center}
 
 Script used to load images from MP4 file, cropped and saved to images is in 
 [`prepare_data.py`](https://github.com/styczen/speed-challenge/blob/master/prepare_data.py) file.
@@ -76,11 +76,16 @@ consecutive frames, converting them from color to grayscale and stacking them as
 channels creating kind of RGB image? In this weird image is information about movement
 encoded in channels. Sample stacked images:
 
-![](/images/speed-challenge/input_stacked_channels.png)
+![](/images/speed-challenge/input_stacked_channels.png){: .align-center}
 
 Different colors on edges can be seen on first and last image can be seen. On the second one,
 there are no additional colors because car is not moving. Additionaly on the third image, 
 color shifts are quite small because car has just started moving.
+
+Next loaded dataset was split in 0.6 - 0.2 - 0.2 parts. This means that whole *training*
+part of dataset is 60% of the whole data and validation and test parts are both 20% each.
+Validation part most of the time is used to fine tune hyperparameters e.g. convolutional
+filter sizes, strides, number of layer, number of neurons.
 
 ## Neural network
 
@@ -97,14 +102,14 @@ more flexibility with model architecture. Each layer can have multiple inputs an
 you can branch out inside model. But if you want to build sequential model you can also 
 do this with *Functional API*. I decided to sequential API because I knew that I will 
 not need more flexibility to modify my model. Here is the code which builds this model:
-
+ 
 ```python
 def get_model(input_shape, params={}):
     """Get convolutional model."""
     model = Sequential(name=params.get('name', 'Speed_predictor'))
     # Conv 0
     model.add(Conv2D(16, kernel_size=(5, 5), strides=(2, 2), padding='same', 
-                               input_shape=input_shape))
+                     input_shape=input_shape))
     model.add(ELU())
 
     # Conv 1
@@ -155,15 +160,97 @@ are some differences between both:
 - `ELU` becomes smooth slowly whereas `ReLu` zeros sharply when input is 0 or less,
 - `ReLu` can make some gradients die because you have no information what happened to neuron when it is negative.
 
-For those reasons and because `ELU` is a strong alternative to `ReLu` I decided to use those 
-as activation function.
+For those reasons I decided to use `ELU` as activation function just to test it. 
+Nevertheless `ReLu` activation is one the most used function of all, because it has
+very simple computational complexity and derivative is very simple.
 
+Additionally summary of the created model:
 
+```
+Model: "Speed_predictor"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d (Conv2D)              (None, 120, 160, 16)      1216      
+_________________________________________________________________
+elu (ELU)                    (None, 120, 160, 16)      0         
+_________________________________________________________________
+conv2d_1 (Conv2D)            (None, 60, 80, 32)        12832     
+_________________________________________________________________
+elu_1 (ELU)                  (None, 60, 80, 32)        0         
+_________________________________________________________________
+conv2d_2 (Conv2D)            (None, 30, 40, 64)        51264     
+_________________________________________________________________
+elu_2 (ELU)                  (None, 30, 40, 64)        0         
+_________________________________________________________________
+conv2d_3 (Conv2D)            (None, 30, 40, 128)       73856     
+_________________________________________________________________
+elu_3 (ELU)                  (None, 30, 40, 128)       0         
+_________________________________________________________________
+conv2d_4 (Conv2D)            (None, 30, 40, 128)       147584    
+_________________________________________________________________
+elu_4 (ELU)                  (None, 30, 40, 128)       0         
+_________________________________________________________________
+flatten (Flatten)            (None, 153600)            0         
+_________________________________________________________________
+dense (Dense)                (None, 64)                9830464   
+_________________________________________________________________
+elu_5 (ELU)                  (None, 64)                0         
+_________________________________________________________________
+dense_1 (Dense)              (None, 32)                2080      
+_________________________________________________________________
+elu_6 (ELU)                  (None, 32)                0         
+_________________________________________________________________
+dense_2 (Dense)              (None, 1)                 33        
+=================================================================
+Total params: 10,119,329
+Trainable params: 10,119,329
+Non-trainable params: 0
+_________________________________________________________________
+```
+
+The los functions used was `MSE` (mean squared error) which was also used
+to evaluate my delivarable.
 
 ## Results
 
-In progress
+First training run was done on dataset as it is, i.e. not shuffled or transformed at all.
+I suspected that the model might overfit. One sign of this is when training loss decreases
+but validation loss increases, the model overfits. The model then just learned the dataset.
+
+Tensorflow allows to log different metrics, not only loss function value. 
+For this training run, I decided to log `MAE` (mean absolute error). 
+
+Below there are plots with training error (blue plots) and validation errors
+(orange plots)
+
+![](/images/speed-challenge/losses_first_run_overfit.png){: .align-center}
+
+Model overfits badly. One simple solution to eliminate this problem is shuffling 
+the dataset. Model then is not able to learn order of images and it converges faster.
+
+And the new plots after shuffling:
+
+![](/images/speed-challenge/losses_second_run.png){: .align-center}
+
+Model doesn't overfit more, so shuffling of dataset was good to eliminate this problem.
+Then I evaluated trained model on test split of dataset with results:
+
+`Loss: 0.21525, MAE: 0.34983`
+
+So result is not the best possible because MSE is around **0.21** and on the challenge
+Github is information that error lower then 10 is good result. Probably if I had more
+time to test other ideas, I could get the error to lower values.
 
 ## Conclusions
 
-Calculate optical flow and calculate speed from it or feed it to CNN.
+Here are some conclusions after finishing this project:
+
+- calculate optical flow and calculate speed from it or feed it to CNN,
+- too big learning rate e.g. 0.001 resulted in instability in learning - after 
+  a few epochs error erupted to a big value,
+- shuffling data before learning is a very important step,
+- using some CNN with recurrent elements might improve results but much 
+  more data would be needed,
+- using cv2.VideoCapture is too slow to use it when training - use only 
+  to display results on full resolution images.
