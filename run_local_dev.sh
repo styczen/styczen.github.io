@@ -1,10 +1,5 @@
 #!/bin/sh
 
-NAME=website_local_env
-if [ $(docker ps -a --filter name=$NAME | grep -w $NAME | wc -l) -eq 1 ];
-then
-    docker start -i $NAME
-else
-    docker run -p 4000:4000 -v ${PWD}:/srv/jekyll --name $NAME jekyll/jekyll:3.5 jekyll serve --watch --drafts --incremental
-fi
+echo "Start local environment"
+docker run --rm -it --volume=${PWD}:/srv/jekyll --volume=${PWD}/vendor/bundle:/usr/local/bundle -p 4000:4000 jekyll/jekyll:3.8 jekyll serve --watch --draft --incremental
 
