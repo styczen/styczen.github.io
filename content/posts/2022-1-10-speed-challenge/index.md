@@ -3,6 +3,8 @@ layout: post
 title: Speed challenge
 ---
 
+## Introduction
+
 The goal of this project was to predict speed of the car from video stream
 and also learn how to write neural networks and datasets in Tensorflow.
 
@@ -14,12 +16,12 @@ with speed of the car for corresponding frame in video. All source code is provi
 First, I investigated provided video to see what the images look like. 
 Below is sample frame provided in the dataset for the challenge.
 
-![](/images/speed-challenge/full_sample_frame.png){: .align-center}
+![](assets/full_sample_frame.png)
 
 Additionaly I read random frames from the whole video stream and visualize them with
 corresponding speed:
 
-![](/images/speed-challenge/random_batch.png){: .align-center}
+![](assets/random_batch.png)
 
 ## Preprocessing
 
@@ -33,7 +35,7 @@ distorted and it could only make it harder to automatically extract useful featu
 So I decided to crop each image. Below is the scene from the image above but cropped
 on all sides.
 
-![](/images/speed-challenge/cropped_sample_frame.png){: .align-center}
+![](assets/cropped_sample_frame.png)
 
 Script used to load images from MP4 file, crop and save each frame to 
 files is in [`prepare_data.py`](https://github.com/styczen/speed-challenge/blob/master/prepare_data.py) file.
@@ -83,7 +85,7 @@ from color to grayscale and stack them as separate channels,
 creating kind of RGB image In this weird image there is information about movement
 encoded in channels. Sample stacked images:
 
-![](/images/speed-challenge/input_stacked_channels.png){: .align-center}
+![](assets/input_stacked_channels.png)
 
 Different colors on edges can be seen on first and last image can be seen. On the second one,
 there are no additional colors because car is not moving. Additionaly on the third image, 
@@ -232,14 +234,14 @@ For this training run, I decided to log `MAE` (mean absolute error).
 Below there are plots with training error (blue plots) and validation errors
 (orange plots)
 
-![](/images/speed-challenge/losses_first_run_overfit.png){: .align-center}
+![](assets/losses_first_run_overfit.png)
 
 Model overfits badly. One simple solution to eliminate this problem is shuffling 
 the dataset. Model then is not able to learn order of images and it converges faster.
 
 And the new plots after shuffling:
 
-![](/images/speed-challenge/losses_second_run.png){: .align-center}
+![](assets/losses_second_run.png)
 
 Model doesn't overfit more, so shuffling of dataset was good to eliminate this problem.
 Then I evaluated trained model on test split of dataset with results:
