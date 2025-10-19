@@ -1,0 +1,4 @@
+baseURL = 'https://styczen.github.io/'
+languageCode = 'en-us'
+title = 'Focusing'
+theme = 'ananke'

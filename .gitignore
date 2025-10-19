@@ -1,0 +1,7 @@
+# Hugo build output
+/public/
+/resources/_gen/
+/hugo_stats.json
+
+# Build and cache directories
+/.hugo_build.lock
