@@ -5,3 +5,6 @@
 
 # Build and cache directories
 /.hugo_build.lock
+
+# Hugo tool
+hugo
