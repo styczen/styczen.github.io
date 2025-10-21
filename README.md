@@ -1,9 +1,25 @@
 # This is my website with posts describing some of my projects or ideas
 
-Currently in heavy development.
+Always in progress.
 
-# How to run locally
+# Download the repository with all submodules
+```bash
+git clone --recurse-submodules git@github.com:styczen/styczen.github.io.git
+```
 
-1. Install Docker.
-2. Run `./run_local_env.sh`.
+# Setup local environment
+```bash
+./setup_local_env.sh
+```
+
+# Run local server
+```bash
+./hugo server
+```
+
+# Build production version
+```bash
+./hugo
+```
+Built files will be in `public` directory.
 
