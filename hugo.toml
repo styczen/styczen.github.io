@@ -1,7 +1,7 @@
 baseURL = 'https://styczen.github.io/'
 languageCode = 'en'
 title = 'Focusing'
-theme = 'ananke'
+theme = 'papermod'
 
 [caches]
   [caches.images]
